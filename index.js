@@ -57,13 +57,35 @@ async function run() {
             const result = await Applied_jobs_collection.insertOne(job);
             res.send(result);
         });
-        
+
 
         /// find Appliedjobs 
         app.get('/Applied_jobs', async (req, res) => {
             const cursor = Applied_jobs_collection.find();
             const result = await cursor.toArray();
             res.send(result)
+        })
+
+
+        //// applied jobs
+        app.get('/Applied_jobs', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await Applied_jobs_collection.find(query).toArray();
+            res.send(result);
+        })
+         //// find jobs with email
+         app.get('/jobs', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await JobCollection.find(query).toArray();
+            res.send(result);
         })
 
         
