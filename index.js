@@ -29,12 +29,12 @@ async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
         await client.connect();
-        
-        
-        
+
+
+
         const JobCollection = client.db('Job_collect').collection('Jobs');
         const Applied_jobs_collection = client.db("App_job_collect").collection("Applied_jobs");
-        
+
         //jobs
         app.post('/jobs', async (req, res) => {
             const job = req.body;
@@ -77,8 +77,8 @@ async function run() {
             const result = await Applied_jobs_collection.find(query).toArray();
             res.send(result);
         })
-         //// find jobs with email
-         app.get('/jobs', async (req, res) => {
+        //// find jobs with email
+        app.get('/jobs', async (req, res) => {
             console.log(req.query.email);
             let query = {};
             if (req.query?.email) {
@@ -94,10 +94,41 @@ async function run() {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) }
             const result = await JobCollection.findOne(query)
+            console.log(result)
             res.send(result)
         })
 
-        
+        app.put('/jobs/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const job = req.body;
+            console.log(job)
+            const updateDoc = {
+                $set: {
+                    Banner_url : job.Banner_url,
+                    Job_title : job.Job_title,
+                    name : job.name,
+                    email : job.email,
+                    Salary_range : job.Salary_range,
+                    Job_description : job.Job_description,
+                    Job_posting_date : job.Job_posting_date,
+                    Job_applicants_number : job.Job_applicants_number
+                },
+            };
+            const result = await JobCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+        })
+
+        // For delete
+        app.delete('/jobs/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await JobCollection.deleteOne(query)
+            res.send(result)
+        })
+
+
 
 
 
